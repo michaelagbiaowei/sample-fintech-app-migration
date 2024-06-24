@@ -10,7 +10,6 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
-	"github.com/joho/godotenv"
 )
 
 var (
@@ -18,12 +17,13 @@ var (
 )
 
 func init() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
+	// Use environment variable directly, with a default value if not set
+	sessionKey := os.Getenv("SESSION_KEY")
+	if sessionKey == "" {
+		sessionKey = "default_session_key" // It's better to generate this randomly in a production environment
 	}
 
-	store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
+	store = sessions.NewCookieStore([]byte(sessionKey))
 	storage.InitDB()
 }
 
@@ -40,8 +40,11 @@ func main() {
 
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
-	http.Handle("/", r)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080" // Default port if not specified
+	}
 
-	log.Println("Starting server on :8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Printf("Server starting on port %s", port)
+	log.Fatal(http.ListenAndServe("0.0.0.0:"+port, r))
 }

@@ -12,13 +12,28 @@ import (
 var db *sql.DB
 
 func InitDB() {
+	dbHost := os.Getenv("DB_HOST")
+	dbPort := os.Getenv("DB_PORT")
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbName := os.Getenv("DB_NAME")
+
+	// Provide default values if environment variables are not set
+	if dbHost == "" {
+		dbHost = "localhost"
+	}
+	if dbPort == "" {
+		dbPort = "5432"
+	}
+	if dbUser == "" {
+		dbUser = "postgres"
+	}
+	if dbName == "" {
+		dbName = "fintech_db"
+	}
+
 	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=require",
-		os.Getenv("DB_HOST"),
-		os.Getenv("DB_PORT"),
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_NAME"),
-	)
+		dbHost, dbPort, dbUser, dbPassword, dbName)
 
 	var err error
 	db, err = sql.Open("postgres", connStr)

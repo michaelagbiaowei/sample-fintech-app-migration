@@ -1,19 +1,24 @@
 package upload
 
 import (
+	"mime/multipart"
+	"os"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"mime/multipart"
-	"os"
 )
 
 func UploadToDigitalOcean(file multipart.File, header *multipart.FileHeader) (string, error) {
 	s3Config := &aws.Config{
-		Credentials: credentials.NewStaticCredentials(os.Getenv("DO_SPACE_KEY"), os.Getenv("DO_SPACE_SECRET"), ""),
-		Endpoint:    aws.String(os.Getenv("DO_SPACE_ENDPOINT")),
-		Region:      aws.String(os.Getenv("DO_SPACE_REGION")),
+		Credentials: credentials.NewStaticCredentials(
+			os.Getenv("DO_SPACE_KEY"),
+			os.Getenv("DO_SPACE_SECRET"),
+			"",
+		),
+		Endpoint: aws.String(os.Getenv("DO_SPACE_ENDPOINT")),
+		Region:   aws.String(os.Getenv("DO_SPACE_REGION")),
 	}
 
 	newSession, err := session.NewSession(s3Config)
