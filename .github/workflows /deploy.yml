@@ -1,0 +1,169 @@
+# name: Deploy to DigitalOcean App Platform
+
+# on:
+#   push:
+#     branches:
+#       - "main"
+#     paths:
+#       - "**/*"
+#       - "!**/README.md"
+#   pull_request:
+#     branches:
+#       - "main"
+#     paths:
+#       - "**/*"
+#       - "!**/README.md"
+
+#   workflow_dispatch:
+
+# jobs:
+#   Placeholader:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - name: Placeholder
+#         run: echo hello world!
+
+#   Development:
+#     name: DigitalOcean App Platform Develpoment Environment
+#     needs: [Placeholader]
+#     if: github.event_name == 'pull_request'
+#     runs-on: ubuntu-latest
+#     environment:
+#       name: Development
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+
+#       - name: Install doctl
+#         uses: digitalocean/action-doctl@v2
+#         with:
+#           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+#       - name: Replace variables in build-spec.yaml
+#         env:
+#           PORT: ${{ secrets.PORT }}
+#           DB_HOST: ${{ secrets.DB_HOST }}
+#           DB_PORT: ${{ secrets.DB_PORT }}
+#           DB_NAME: ${{ secrets.DB_NAME }}
+#           DB_USER: ${{ secrets.DB_USER }}
+#           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+#         run: |
+#           sed -i 's/\${PORT}/'"$PORT"'/g' build-spec.yaml
+#           sed -i 's/\${DB_HOST}/'"$DB_HOST"'/g' build-spec.yaml
+#           sed -i 's/\${DB_PORT}/'"$DB_PORT"'/g' build-spec.yaml
+#           sed -i 's/\${DB_NAME}/'"$DB_NAME"'/g' build-spec.yaml
+#           sed -i 's/\${DB_USER}/'"$DB_USER"'/g' build-spec.yaml
+#           sed -i 's/\${DB_PASSWORD}/'"$DB_PASSWORD"'/g' build-spec.yaml
+
+#       - name: Develpoment Environment
+#         run: doctl apps create --spec build-spec.yaml
+
+#       - name: Wait for 1 minute before proceeding
+#         run: sleep 30
+
+#       - name: Get Dev App ID
+#         id: get-app-id
+#         run: |
+#           app_id=$(doctl apps list --format ID --no-header | head -n 1)
+#           echo "::set-output name=app_id::$app_id"
+
+#       - name: Clean Up Dev Env
+#         if: success()
+#         run: doctl apps delete ${{ steps.get-app-id.outputs.app_id }} --force
+  
+#       - name: Notify on failure
+#         if: failure()
+#         uses: actions/github-script@v6
+#         with:
+#           script: |
+#             const { context, github } = require('@actions/github');
+#             const issueComment = context.payload.pull_request.number;
+#             const message = 'Deployment failed. Please check the logs.';
+#             await github.issues.createComment({
+#               ...context.repo,
+#               issue_number: issueComment,
+#               body: message
+#             });
+
+#   Staging:
+#     name: DigitalOcean App Platform Staging Environment
+#     if: github.event.ref == 'refs/heads/main'
+#     needs: [Placeholader]
+#     runs-on: ubuntu-latest
+#     environment:
+#       name: Staging
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+
+#       - name: Install doctl
+#         uses: digitalocean/action-doctl@v2
+#         with:
+#           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+#       - name: Replace variables in build-spec.yaml
+#         env:
+#           PORT: ${{ secrets.PORT }}
+#           DB_HOST: ${{ secrets.DB_HOST }}
+#           DB_PORT: ${{ secrets.DB_PORT }}
+#           DB_NAME: ${{ secrets.DB_NAME }}
+#           DB_USER: ${{ secrets.DB_USER }}
+#           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+#         run: |
+#           sed -i 's/\${PORT}/'"$PORT"'/g' build-spec.yaml
+#           sed -i 's/\${DB_HOST}/'"$DB_HOST"'/g' build-spec.yaml
+#           sed -i 's/\${DB_PORT}/'"$DB_PORT"'/g' build-spec.yaml
+#           sed -i 's/\${DB_NAME}/'"$DB_NAME"'/g' build-spec.yaml
+#           sed -i 's/\${DB_USER}/'"$DB_USER"'/g' build-spec.yaml
+#           sed -i 's/\${DB_PASSWORD}/'"$DB_PASSWORD"'/g' build-spec.yaml
+
+#       - name: Staging Environment
+#         run: doctl apps create --spec build-spec.yaml
+
+#       - name: Wait for 1 minute before proceeding
+#         run: sleep 30
+
+#       - name: Get Stage App ID
+#         id: get-app-id
+#         run: |
+#           app_id=$(doctl apps list --format ID --no-header | head -n 1)
+#           echo "::set-output name=app_id::$app_id"
+
+#       - name: Clean Up Stage Env
+#         if: success()
+#         run: doctl apps delete ${{ steps.get-app-id.outputs.app_id }} --force
+        
+#   Producion:
+#     name: DigitalOcean App Platform Production Environment
+#     needs: [Staging]
+#     runs-on: ubuntu-latest
+#     environment:
+#       name: Production
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+
+#       - name: Install doctl
+#         uses: digitalocean/action-doctl@v2
+#         with:
+#           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+#       - name: Replace variables in build-spec.yaml
+#         env:
+#           PORT: ${{ secrets.PORT }}
+#           DB_HOST: ${{ secrets.DB_HOST }}
+#           DB_PORT: ${{ secrets.DB_PORT }}
+#           DB_NAME: ${{ secrets.DB_NAME }}
+#           DB_USER: ${{ secrets.DB_USER }}
+#           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+#         run: |
+#           sed -i 's/\${PORT}/'"$PORT"'/g' build-spec.yaml
+#           sed -i 's/\${DB_HOST}/'"$DB_HOST"'/g' build-spec.yaml
+#           sed -i 's/\${DB_PORT}/'"$DB_PORT"'/g' build-spec.yaml
+#           sed -i 's/\${DB_NAME}/'"$DB_NAME"'/g' build-spec.yaml
+#           sed -i 's/\${DB_USER}/'"$DB_USER"'/g' build-spec.yaml
+#           sed -i 's/\${DB_PASSWORD}/'"$DB_PASSWORD"'/g' build-spec.yaml
+
+#       - name: Production Environment
+#         run: doctl apps create --spec build-spec.yaml
