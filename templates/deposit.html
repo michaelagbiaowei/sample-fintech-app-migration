@@ -1,0 +1,18 @@
+{{define "content"}}
+<h1>Deposit</h1>
+{{if .Message}}
+<p class="message">{{.Message}}</p>
+{{end}} {{if .Error}}
+<p class="error">{{.Error}}</p>
+{{end}}
+<form action="/deposit" method="POST">
+  <input
+    type="number"
+    name="amount"
+    placeholder="Amount"
+    step="0.01"
+    required
+  />
+  <button type="submit">Deposit</button>
+</form>
+{{end}}
