@@ -6,24 +6,24 @@ on:
   workflow_dispatch:
 
 jobs:
-  # build:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-  #     - name: Set up Go
-  #       uses: actions/setup-go@v4
-  #       with:
-  #         go-version: "1.22"
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.22"
 
-  #     - name: Build
-  #       run: go build -v ./
+      - name: Build
+        run: go build -v ./
 
       # - name: Test
       #   run: go test -v ./tests
 
   push_to_registry:
-    # needs: [build]
+    needs: [build]
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
     permissions:
@@ -46,4 +46,4 @@ jobs:
           context: ./
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.IMAGE }}
+          tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.IMAGE }}:v2
