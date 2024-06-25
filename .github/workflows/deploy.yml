@@ -27,7 +27,7 @@ jobs:
   Development:
     name: DigitalOcean App Platform Develpoment Environment
     needs: [Placeholader]
-    # if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     environment:
       name: Development

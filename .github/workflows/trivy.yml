@@ -1,0 +1,28 @@
+name: Trivy Pipeline
+
+on:
+  schedule:
+    - cron: "0 12 * * *" 
+  workflow_run:
+    workflows: ["Build Pipeline"]
+    types: [completed]
+    
+  workflow_dispatch:
+
+jobs:
+  scan:
+    name: Daily Vulnerability Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Pull Go Sample App Docker Image
+        run: docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.IMAGE }}:v2
+
+      - name: Scan Go Sample App Docker Image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: "${{ secrets.DOCKER_USERNAME }}/${{ secrets.IMAGE }}:v2"
+          exit-code: "1"
+          ignore-unfixed: true
+          vuln-type: "os,library"
+          severity: "CRITICAL,HIGH"
