@@ -20,9 +20,8 @@ func UploadToDigitalOcean(file multipart.File, header *multipart.FileHeader) (st
 			os.Getenv("DO_SPACE_SECRET"),
 			"",
 		),
-		Endpoint:         aws.String(os.Getenv("DO_SPACE_ENDPOINT")),
-		Region:           aws.String(os.Getenv("DO_SPACE_REGION")),
-		S3ForcePathStyle: aws.Bool(true),
+		Endpoint: aws.String(os.Getenv("DO_SPACE_ENDPOINT")),
+		Region:   aws.String(os.Getenv("DO_SPACE_REGION")),
 	}
 
 	newSession, err := session.NewSession(s3Config)
@@ -48,7 +47,7 @@ func UploadToDigitalOcean(file multipart.File, header *multipart.FileHeader) (st
 
 	log.Println("File uploaded successfully")
 
-	fileURL := "https://" + os.Getenv("DO_SPACE_ENDPOINT") + "/" + os.Getenv("DO_SPACE_BUCKET") + "/" + header.Filename
+	fileURL := "https://" + os.Getenv("DO_SPACE_BUCKET") + "." + os.Getenv("DO_SPACE_REGION") + ".digitaloceanspaces.com/" + header.Filename
 
 	return fileURL, nil
 }

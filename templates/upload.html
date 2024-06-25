@@ -1,4 +1,7 @@
-<form action="/upload" method="post" enctype="multipart/form-data">
-  <input type="file" name="file">
-  <input type="submit" value="Upload">
+{{define "content"}}
+<h1>Upload File</h1>
+<form action="/upload" method="POST" enctype="multipart/form-data">
+  <input type="file" name="file" required />
+  <button type="submit">Upload</button>
 </form>
+{{end}}
