@@ -1,8 +1,8 @@
 name: Trivy Pipeline
 
 on:
-  schedule:
-    - cron: "0 12 * * *" 
+  # schedule:
+  #   - cron: "0 12 * * *" 
   workflow_run:
     workflows: ["Build Pipeline"]
     types: [completed]
@@ -13,6 +13,7 @@ jobs:
   scan:
     name: Daily Vulnerability Scan
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: Pull Go Sample App Docker Image
