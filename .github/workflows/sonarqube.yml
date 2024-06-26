@@ -22,10 +22,7 @@ defaults:
 jobs:
   sonarcloud:
     name: SonarCloud
-    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
-    environment:
-      name: Development
     steps:
       - uses: actions/checkout@v4
         with:

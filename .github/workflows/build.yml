@@ -19,8 +19,8 @@ jobs:
       - name: Build
         run: go build -v ./
 
-      # - name: Test
-      #   run: go test -v ./tests
+      - name: Test
+        run: go test -v ./tests
 
   push_to_registry:
     needs: [build]
